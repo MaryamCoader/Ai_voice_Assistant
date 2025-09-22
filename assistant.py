@@ -94,17 +94,24 @@ def handle_command(command):
             speak(f"Playing {song} on YouTube")
 
     elif "news" in command:
-        try:
-            speak("Fetching the latest news.")
-            url = "https://newsapi.org/v2/top-headlines?country=us&apiKey=c58b7b5e4df74b8a9d071e42c815574a"
-            articles = requests.get(url).json().get("articles", [])
-            if articles:
-                for article in articles[:5]:
-                    speak(article.get("title"))
-            else:
-                speak("No news found.")
-        except Exception as e:
-            update_output(f"News Error: {e}")
+      try:
+          speak("Fetching the latest news.")
+          api_key = os.getenv("NEWS_API_KEY")  # <-- env se key lena
+          if not api_key:
+            speak("News API key not found. Please check your .env file.")
+            return
+        
+          url = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={api_key}"
+          articles = requests.get(url).json().get("articles", [])
+        
+          if articles:
+            for article in articles[:5]:
+                speak(article.get("title"))
+          else:
+            speak("No news found.")
+      except Exception as e:
+        update_output(f"News Error: {e}")
+
 
     elif "reminder" in command:
         speak("What should I remind you about?")
